@@ -19,7 +19,7 @@ export default function Grid({ gameState, onUserMove, isGameStarted }: Props) {
             <div className="grid">
                 {gameState.map((row,i) => {
                     return (
-                        <div className={"grid__row"}>
+                        <div className={"grid__row"} key={i}>
                             {row.map((symbol,j) => {
                                 return (
                                     <div   
@@ -32,6 +32,7 @@ export default function Grid({ gameState, onUserMove, isGameStarted }: Props) {
                                             !isGameStarted && 'disabled'
                                         )}
                                         onClick={() => onUserMove(i,j)}
+                                        key={j}
                                     >
                                         {symbol !== ' ' && (
                                             <ReactIcon 

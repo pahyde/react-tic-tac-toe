@@ -2,7 +2,7 @@ import React from 'react'
 import { useState } from 'react'
 import './App.scss'
 import Grid from './components/Grid'
-import { minimax } from './algorithms'
+import { getComputerMove, getWinner } from './algorithms'
 import StartResetPanel from './components/StartResetPanel'
 import { sleep } from './aux'
 
@@ -23,7 +23,9 @@ function App() {
         [' ', ' ', ' ']
     ])
 
-    const [isUserFirstMove, setisUserFirstMove] = useState(true)
+    console.log(getWinner(gameState))
+
+    const [isUserFirstMove, setisUserFirstMove] = useState(!true)
     const userSymbol     = isUserFirstMove ? 'X' : 'O' 
     const opponentSymbol = isUserFirstMove ? 'O' : 'X' 
 
@@ -37,23 +39,32 @@ function App() {
         if (isOpponentMove) return
         if (gameState[i][j] !== ' ') return
 
-        updateGameState(i, j, userSymbol)
+        setGameState(prev => {
+            return prev.map((row,r) => {
+                return row.map((value,c) => {
+                    return i === r && j === c ? userSymbol : value
+                })
+            }) as GameState
+        })
+
         handleOpponentMove()
     }
 
-    const handleOpponentMove = () => {
+    const handleOpponentMove = async () => {
         setIsOpponentMove(true)
-        // const [i,j] = minimax(gameState, userSymbol, opponentSymbol)
-        // sleep(1000)
-        // updateGameState(i, j, opponentSymbol)
+
+        await sleep(200)
+        setGameState(prev => {
+            const [i,j]  = getComputerMove(prev, userSymbol, opponentSymbol)
+            return prev.map((row,r) => {
+                return row.map((value,c) => {
+                    return i === r && j === c ? opponentSymbol : value
+                })
+            }) as GameState
+        })
         setIsOpponentMove(false)
     }
 
-    const updateGameState = (i: number, j: number, symbol: 'X' | 'O') => {
-        const gameStateCopy = gameState.map(row => row.map(symbol => symbol)) as GameState
-        gameStateCopy[i][j] = symbol
-        setGameState(gameStateCopy)
-    }
 
     const handleStartGame = () => {
         handleResetGame()
@@ -67,9 +78,9 @@ function App() {
 
     const handleResetGame = () => {
         setGameState([
-            ['X', ' ', ' '],
-            [' ', 'O', ' '],
-            ['O', 'X', ' ']
+            [' ', ' ', ' '],
+            [' ', ' ', ' '],
+            [' ', ' ', ' ']
         ])
         setIsGameStarted(false)
     }
