@@ -1,0 +1,24 @@
+.game-container {
+    position: absolute;
+    top: 50vh;
+    left: 50vw;
+    transform: translate(-50%, -52%);
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    height: 500px;
+}
+
+.start-reset-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-top: 20px;
+    height: 120px;
+}
+
+.start-reset-btn {
+    height: 56px;
+    font-size: 16px;
+    text-transform: uppercase;
+}
