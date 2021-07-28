@@ -50,10 +50,7 @@ function App() {
 
     const handleUserMove = (i: number, j: number) => {
         if (!isGameStarted) return
-        if (isOpponentMove) {
-            console.log('here')
-            return
-        }
+        if (isOpponentMove) return
         if (outcome) return
         if (gameState[i][j] !== ' ') return
 
