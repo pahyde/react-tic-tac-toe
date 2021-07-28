@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useState } from 'react'
 import './App.scss'
 import Grid from './components/Grid'
@@ -23,8 +23,6 @@ function App() {
         [' ', ' ', ' ']
     ])
 
-    console.log(getWinner(gameState))
-
     const [isUserFirstMove, setisUserFirstMove] = useState(!true)
     const userSymbol     = isUserFirstMove ? 'X' : 'O' 
     const opponentSymbol = isUserFirstMove ? 'O' : 'X' 
@@ -32,22 +30,41 @@ function App() {
     const [isOpponentMove, setIsOpponentMove] = useState(false)
 
     const [isGameStarted, setIsGameStarted] = useState(false)
-    const [winner, setWinner] = useState<'X' | 'O' | undefined>()
+    const [outcome, setOutcome] = useState<'X' | 'O' | 'tie' | undefined>()
+
+    useEffect(() => {
+        if (!outcome) return 
+
+        (async () => {
+            await sleep(2000)
+            setOutcome(undefined)
+        })()
+
+    }, [outcome])
+
+    useEffect(() => {
+        const isTieGame = gameState.every(row => row.every(space => space !== ' '))
+
+        if (isTieGame) setOutcome('tie')
+    }, [gameState])
 
     const handleUserMove = (i: number, j: number) => {
         if (!isGameStarted) return
         if (isOpponentMove) return
+        if (outcome) return
         if (gameState[i][j] !== ' ') return
 
-        setGameState(prev => {
-            return prev.map((row,r) => {
-                return row.map((value,c) => {
-                    return i === r && j === c ? userSymbol : value
-                })
-            }) as GameState
-        })
+        const nextState = handlePlayerMove(gameState,i,j,userSymbol)
+        setGameState(nextState)
 
-        handleOpponentMove()
+        const winner = getWinner(nextState)
+
+        if (winner) {
+            setOutcome(winner)
+        } else {
+            handleOpponentMove()
+        }
+
     }
 
     const handleOpponentMove = async () => {
@@ -56,13 +73,20 @@ function App() {
         await sleep(200)
         setGameState(prev => {
             const [i,j]  = getComputerMove(prev, userSymbol, opponentSymbol)
-            return prev.map((row,r) => {
-                return row.map((value,c) => {
-                    return i === r && j === c ? opponentSymbol : value
-                })
-            }) as GameState
+            const nextState = handlePlayerMove(prev,i,j, opponentSymbol)
+            setOutcome(getWinner(nextState))
+            
+            return nextState
         })
         setIsOpponentMove(false)
+    }
+
+    const handlePlayerMove = (prevState: GameState, i: number, j: number, symbol: string) => {
+        return prevState.map((row,r) => {
+            return row.map((value,c) => {
+                return i === r && j === c ? symbol : value
+            })
+        }) as GameState
     }
 
 
@@ -87,6 +111,15 @@ function App() {
 
     return (
         <div className="app">
+
+            {outcome && (
+                <span className="winner-declaration">
+                    {outcome === 'tie' 
+                        ? 'CATZ (Tie Game)'
+                        : `${outcome}s WIN!`}
+                </span>
+            )}
+
             <div className="game-container">
                 <Grid 
                     gameState={gameState}
@@ -99,10 +132,6 @@ function App() {
                     isGameStarted={isGameStarted}  
                 />
             </div>
-
-            {winner && (
-                <></>
-            )}
         </div>
     )
 }

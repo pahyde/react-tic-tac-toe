@@ -1,12 +1,24 @@
 .game-container {
     position: absolute;
-    top: 50vh;
+    top: #{"max(390px, 50vh)"};
     left: 50vw;
     transform: translate(-50%, -52%);
     display: flex;
     flex-direction: column;
     align-items: stretch;
     height: 520px;
+}
+
+.winner-declaration {
+    font-family: 'Open Sans';
+    position: absolute;
+    font-size: 48px;
+    top: 30px;
+    left: 50vw;
+    transform: translateX(-50%);
+    padding-bottom: 10px;
+    text-align: center;
+    color: #fff;
 }
 
 .start-reset-panel {
