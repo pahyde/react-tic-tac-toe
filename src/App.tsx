@@ -116,7 +116,7 @@ function App() {
             {outcome && (
                 <span className="winner-declaration">
                     {outcome === 'tie' 
-                        ? 'CATZ (Tie Game)'
+                        ? 'Tie Game'
                         : `${outcome}s WIN!`}
                 </span>
             )}
