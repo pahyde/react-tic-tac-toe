@@ -1,6 +1,7 @@
 import React from 'react'
 import clsx from 'clsx'
 import { IoCloseSharp } from 'react-icons/io5'
+import { AiOutlineClose} from 'react-icons/ai'
 import { FiCircle } from 'react-icons/fi'
 import { GrClose } from 'react-icons/gr'
 import { GameState } from '../App'
@@ -34,11 +35,17 @@ export default function Grid({ gameState, onUserMove, isGameStarted }: Props) {
                                     >
                                         {symbol !== ' ' && (
                                             <ReactIcon 
-                                                className="grid__row__cell--icon"
+                                                className={clsx(
+                                                    'grid__row__cell__icon',
+                                                    symbol === 'X'
+                                                        ? 'grid__row__cell__icon--X'
+                                                        : 'grid__row__cell__icon--O'
+                                                )}
                                                 Icon={symbol === 'X' 
-                                                    ? GrClose // IoCloseSharp
+                                                    ? AiOutlineClose //GrClose // IoCloseSharp
                                                     : FiCircle
                                                 }
+                                                color={symbol === 'X' ? 'rgb(20, 100, 100)' : '#fff'}
                                             />
                                         )}
                                     </div>
@@ -51,3 +58,4 @@ export default function Grid({ gameState, onUserMove, isGameStarted }: Props) {
         </div>
     )
 }
+ 

@@ -6,19 +6,27 @@
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    height: 500px;
+    height: 520px;
 }
 
 .start-reset-panel {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    margin-top: 20px;
-    height: 120px;
+    margin-top: 40px;
+    height: 125px;
 }
 
 .start-reset-btn {
     height: 56px;
     font-size: 16px;
     text-transform: uppercase;
+    background-color: transparent;
+    //border: solid #fff 1px;
+    background-color: transparent;
+    background-color: rgb(32, 155, 155);
+
+    &:hover {
+        background-color: rgb(25, 146, 146);
+    }
 }

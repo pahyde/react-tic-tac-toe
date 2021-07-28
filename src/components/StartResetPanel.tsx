@@ -16,11 +16,9 @@ export default function StartResetPanel(props: Props) {
                 <span>New Game</span>
             </button>
 
-            {isGameStarted && (
-                <button className="start-reset-btn btn" onClick={onResetGame}>
-                    <span>Reset Game</span>
-                </button>
-            )}       
+            <button className="start-reset-btn btn" onClick={onResetGame}>
+                <span>Reset Game</span>
+            </button>      
         </div>
     )
 }

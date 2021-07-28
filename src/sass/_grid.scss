@@ -2,7 +2,7 @@ $grid-size: 350px;
 $border-size: 2px;
 
 .grid-container {
-    background-color: rgba(226, 79, 21, 0.26);
+    //background-color: rgba(226, 79, 21, 0.26);
     border-radius: 5px;
     display: flex;
     justify-content: center;
@@ -39,9 +39,14 @@ $border-size: 2px;
                 cursor: pointer;
             }
 
-            &--icon {
-                width: 45px;
-                height: 45px;
+            &__icon {
+                width: 70px;
+                height: 70px;
+
+                &--X {
+                    width: 78px;
+                    height: 78px; 
+                }
             }
         }
     }
