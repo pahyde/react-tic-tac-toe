@@ -27,7 +27,7 @@ function App() {
     const userSymbol     = isUserFirstMove ? 'X' : 'O' 
     const opponentSymbol = isUserFirstMove ? 'O' : 'X' 
 
-    const [isOpponentMove, setIsOpponentMove] = useState(false)
+    const [isOpponentMove, setIsOpponentMove] = useState(true)
 
     const [isGameStarted, setIsGameStarted] = useState(false)
     const [outcome, setOutcome] = useState<'X' | 'O' | 'tie' | undefined>()
@@ -50,7 +50,10 @@ function App() {
 
     const handleUserMove = (i: number, j: number) => {
         if (!isGameStarted) return
-        if (isOpponentMove) return
+        if (isOpponentMove) {
+            console.log('here')
+            return
+        }
         if (outcome) return
         if (gameState[i][j] !== ' ') return
 
@@ -78,6 +81,7 @@ function App() {
             
             return nextState
         })
+        await sleep(100)
         setIsOpponentMove(false)
     }
 
