@@ -43,8 +43,9 @@ function App() {
     }, [outcome])
 
     useEffect(() => {
-        const isTieGame = gameState.every(row => row.every(space => space !== ' '))
+        if (outcome) return
 
+        const isTieGame = gameState.every(row => row.every(space => space !== ' '))
         if (isTieGame) setOutcome('tie')
     }, [gameState])
 
