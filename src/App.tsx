@@ -5,6 +5,7 @@ import Grid from './components/Grid'
 import { getComputerMove, getWinner } from './algorithms'
 import StartResetPanel from './components/StartResetPanel'
 import { sleep } from './aux'
+import { useMemo } from 'react'
 
 
 type PositionState = 'X' | 'O' | ' '
@@ -15,6 +16,15 @@ export type GameState = [
     [PositionState, PositionState, PositionState]
 ]
 
+type GameOutcome = 'X' | 'O' | 'TIE' | undefined
+type OutcomeMessage =
+    | 'X\'s WIN!'
+    | 'O\'s WIN!'
+    | 'TIE GAME'
+    | null
+
+type TurnNumber = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+
 function App() {
 
     const [gameState, setGameState] = useState<GameState>([
@@ -23,64 +33,67 @@ function App() {
         [' ', ' ', ' ']
     ])
 
-    const [isUserFirstMove, setisUserFirstMove] = useState(!true)
-    const userSymbol     = isUserFirstMove ? 'X' : 'O' 
-    const opponentSymbol = isUserFirstMove ? 'O' : 'X' 
+    const gameOutcome = useMemo<GameOutcome>(() => {
+        const winner = getWinner(gameState)
+        if (winner) return winner
 
-    const [isOpponentMove, setIsOpponentMove] = useState(true)
-
-    const [isGameStarted, setIsGameStarted] = useState(false)
-    const [outcome, setOutcome] = useState<'X' | 'O' | 'tie' | undefined>()
-
-    useEffect(() => {
-        if (!outcome) return 
-
-        (async () => {
-            await sleep(2000)
-            setOutcome(undefined)
-        })()
-
-    }, [outcome])
-
-    useEffect(() => {
-        if (outcome) return
-
-        const isTieGame = gameState.every(row => row.every(space => space !== ' '))
-        if (isTieGame) setOutcome('tie')
+        const isTie = gameState.every(row => row.every(space => space !== ' '))
+        if (isTie) return 'TIE'
     }, [gameState])
 
-    const handleUserMove = (i: number, j: number) => {
-        if (!isGameStarted) return
-        if (isOpponentMove) return
-        if (outcome) return
-        if (gameState[i][j] !== ' ') return
+    const [outcomeMessage, setOutcomeMessage] = useState<OutcomeMessage>(null)
 
-        const nextState = handlePlayerMove(gameState,i,j,userSymbol)
-        setGameState(nextState)
 
-        const winner = getWinner(nextState)
+    const [isUserFirstMove, setisUserFirstMove] = useState(!true)
+    const [userSymbol, setUserSymbol] = useState<'X' | 'O'>('X')
+    const opponentSymbol = userSymbol === 'X' ? 'O' : 'X'
 
-        if (winner) {
-            setOutcome(winner)
-        } else {
+    const [turn, setTurn] = useState<TurnNumber>(0)
+    const isUserMove = turn % 2 ? !isUserFirstMove : isUserFirstMove 
+    const [isGameStarted, setIsGameStarted] = useState(false)
+    const [newGameBtnEnabled, setNewGameBtnEnabled] = useState(true)
+
+    useEffect(() => {
+        if (turn < 1) return
+
+        setNewGameBtnEnabled(true)
+        
+        if (gameOutcome) {
+            displayOutcomeMessage()
+        } else if (!isUserMove) {
             handleOpponentMove()
         }
+    }, [turn])
 
+
+    const displayOutcomeMessage = async () => {
+        let message: OutcomeMessage = null
+        if (gameOutcome === 'X')   message = 'X\'s WIN!'
+        if (gameOutcome === 'O')   message = 'O\'s WIN!'
+        if (gameOutcome === 'TIE') message = 'TIE GAME'
+        setOutcomeMessage(message)
+        await sleep(2000)
+        setOutcomeMessage(null)
     }
 
     const handleOpponentMove = async () => {
-        setIsOpponentMove(true)
-
         await sleep(200)
         setGameState(prev => {
             const [i,j]  = getComputerMove(prev, userSymbol, opponentSymbol)
             const nextState = handlePlayerMove(prev,i,j, opponentSymbol)
-            setOutcome(getWinner(nextState))
-            
             return nextState
         })
-        await sleep(100)
-        setIsOpponentMove(false)
+        setTurn(prev => prev + 1 as TurnNumber)
+    }
+
+    const handleUserMove = (i: number, j: number) => {
+        if (!isUserMove) return
+        if (gameOutcome) return
+        if (gameState[i][j] !== ' ') return
+
+        const nextState = handlePlayerMove(gameState,i,j,userSymbol)
+        setGameState(nextState)
+        setTurn(prev => prev + 1 as TurnNumber)
     }
 
     const handlePlayerMove = (prevState: GameState, i: number, j: number, symbol: string) => {
@@ -93,32 +106,33 @@ function App() {
 
 
     const handleStartGame = () => {
-        handleResetGame()
+        if (!newGameBtnEnabled) return
 
+        handleResetGame()
         setIsGameStarted(true)
 
         if (!isUserFirstMove) {
+            setNewGameBtnEnabled(false)
             handleOpponentMove()
         }
     }
 
     const handleResetGame = () => {
+        setIsGameStarted(false)
         setGameState([
             [' ', ' ', ' '],
             [' ', ' ', ' '],
             [' ', ' ', ' ']
         ])
-        setIsGameStarted(false)
+        setTurn(0)
     }
 
     return (
         <div className="app">
 
-            {outcome && (
+            {outcomeMessage && (
                 <span className="winner-declaration">
-                    {outcome === 'tie' 
-                        ? 'Tie Game'
-                        : `${outcome}s WIN!`}
+                    {outcomeMessage}
                 </span>
             )}
 
