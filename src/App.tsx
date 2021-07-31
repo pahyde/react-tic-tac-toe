@@ -6,6 +6,11 @@ import { getComputerMove, getWinner } from './algorithms'
 import StartResetPanel from './components/StartResetPanel'
 import { sleep } from './aux'
 import { useMemo } from 'react'
+import { GiHamburgerMenu } from 'react-icons/gi'
+import SettingsMenu from './components/SettingsMenu'
+import ReactIcon from './components/ReactIcon'
+import { Route, Link, useLocation } from 'react-router-dom' 
+import QuickSettingsMenu from './components/QuickSettingsMenu'
 
 
 type PositionState = 'X' | 'O' | ' '
@@ -26,6 +31,8 @@ type OutcomeMessage =
 type TurnNumber = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
 
 function App() {
+
+    const { pathname } = useLocation()
 
     const [gameState, setGameState] = useState<GameState>([
         [' ', ' ', ' '],
@@ -127,14 +134,34 @@ function App() {
         setTurn(0)
     }
 
+    const handleSelectSymbol = (symbol: 'X' | 'O') => {
+        setUserSymbol(symbol)
+    }
+
     return (
         <div className="app">
+
+            <Route exact path="/settings">
+                <SettingsMenu />
+            </Route>
+            
 
             {outcomeMessage && (
                 <span className="winner-declaration">
                     {outcomeMessage}
                 </span>
             )}
+
+            <Link   
+                to={pathname === '/' ? '/settings' : '/'}
+                className="menu-btn"
+            >
+                <ReactIcon
+                    Icon={GiHamburgerMenu}
+                    className={'menu-btn__icon'}
+                    color={'#fff'}
+                />
+            </Link>
 
             <div className="game-container">
                 <Grid 
@@ -148,6 +175,13 @@ function App() {
                     isGameStarted={isGameStarted}  
                 />
             </div>
+            
+            <QuickSettingsMenu 
+                onSelectSymbol={handleSelectSymbol}
+                onToggleFirstMove={() => {}}
+                selectedSymbol={userSymbol}
+                isUserFirstMove={isUserFirstMove}
+            />
         </div>
     )
 }
